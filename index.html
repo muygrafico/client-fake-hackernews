@@ -15,8 +15,26 @@
       <div class="col-lg-12">
         <h2>Welcome to The Fake Hackernews client:</h2>
         <p>Here you can test the basic actions posible with the <a href="https://github.com/alejoescobar/api_hacker_news">API</a></p>
-        <p><button class="list-articles btn btn-primary">List Articles</button><button class="list-users btn btn-default">List Users</button></p>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <form id="new-comment-form" class="hidden">
+          <div class="form-group">
+            <label for="body">Text body:</label>
+            <textarea class="form-control" name="body" id="comment-body"></textarea>
+            <input type="hidden" name="id">
+          </div>
+          <button type="submit" value="Submit" class="create-article btn btn-default">Create Article</button>
+        </form> 
+      </div>
+    </div>
+
+    <hr>
+
+    <div>
+      <p><button class="list-articles btn btn-primary">List Articles</button><button class="list-users btn btn-default">List Users</button></p>
     </div>
 
     <div class="row articles">
@@ -58,7 +76,7 @@
             $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
           }
           if (type === "articles") {
-            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p><a href="#" class="btn btn-default btn-sm">add comment</a></div>'));
+            $( insert_into ).append($('<div id=' + item.id + ' class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p><a href="#" class="btn btn-default btn-sm create-comment">add comment</a></div>'));
           };
         });
 
@@ -105,11 +123,11 @@
 
       }
 
-      var createArticle = function( serializedData ){
+      var createArticle = function(){
 
         console.log("serializing:" + $('#new-article-form').serialize());
         url = "http://api.fakehackernews.com/api/articles";
-        var item = {"title" : "some title", "body" : "some body", "user_id": 2};
+        var item = {"title" : $("#title").val(), "body" : $("#body").val(), "user_id": 2};
 
         $.ajax({
           type: 'POST',
@@ -119,6 +137,7 @@
           success: function(){
             // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
             console.log("successfully sended");
+            $("#new-article-form").find("input[type=text], textarea").val("");
           },
           error: function(e) { console.log(e) },
           dataType: "json",
@@ -126,6 +145,27 @@
         });
       }
 
+      var createComment = function( id ){
+
+        console.log("serializing:" + $('#new-comment-form').serialize());
+        url = "http://api.fakehackernews.com/api/users/" + 2 + "/comments" ;
+        var item = {"body" : $("#comment-body").val(), "article_id": id};
+
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: JSON.stringify(item),
+          // data: serializedData ,
+          success: function(){
+            // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
+            console.log("successfully sended");
+            $("#new-article-form").find("input[type=text], textarea").val("");
+          },
+          error: function(e) { console.log(e) },
+          dataType: "json",
+          contentType: "application/json"
+        });
+      }
 
 
       $('.list-articles').on('click', this ,function(){
@@ -142,11 +182,28 @@
 
     //   // callArticles("http://api.fakehackernews.com/api/articles",".articles");
     // })
-$( "form#" ).on( "submit", function( event ) {
+$( "#new-article-form" ).on( "submit", function( event ) {
   event.preventDefault();
       // console.log( $( this ).serialize() );
-      createArticle( $( this ).serialize() );
+      createArticle();
     });
+
+ var store_id = function(id){
+  var temp_storage = id;
+  return temp_storage;
+ }
+ 
+$(".articles").on("click", ".create-comment", function() {
+  console.log($(this).parent().attr('id'));
+  var articleId = $(this).parent().attr('id');
+  $("#new-comment-form input[type=hidden]").attr("name", articleId);
+  $("#new-comment-form").removeClass('hidden');
+});
+
+// $("#new-comment-form").on("submit", function(e){
+//   e.preventDefault();
+//   createComment();
+// })
 
 });
 </script>
