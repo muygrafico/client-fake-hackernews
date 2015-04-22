@@ -26,7 +26,7 @@
             <textarea class="form-control" name="body" id="comment-body"></textarea>
             <input type="hidden" name="id">
           </div>
-          <button type="submit" value="Submit" class="create-article btn btn-default">Create Article</button>
+          <button type="submit" value="Submit" class="create-article btn btn-default">Create Comment</button>
         </form> 
       </div>
     </div>
@@ -137,7 +137,7 @@
           success: function(){
             // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
             console.log("successfully sended");
-            $("#new-article-form").find("input[type=text], textarea").val("");
+            $("#new-article-form").find("textarea").val("");
           },
           error: function(e) { console.log(e) },
           dataType: "json",
@@ -159,7 +159,8 @@
           success: function(){
             // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
             console.log("successfully sended");
-            $("#new-article-form").find("input[type=text], textarea").val("");
+            $("#new-comment-form").find("input[type=textarea], textarea").val("");
+            $("#new-comment-form").addClass('hidden')
           },
           error: function(e) { console.log(e) },
           dataType: "json",
@@ -200,10 +201,10 @@ $(".articles").on("click", ".create-comment", function() {
   $("#new-comment-form").removeClass('hidden');
 });
 
-// $("#new-comment-form").on("submit", function(e){
-//   e.preventDefault();
-//   createComment();
-// })
+$("#new-comment-form").on("submit", function(e){
+  e.preventDefault();
+  createComment($("#new-comment-form input[type=hidden]").attr("name"));
+})
 
 });
 </script>
