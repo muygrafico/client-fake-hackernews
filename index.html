@@ -5,7 +5,59 @@
   <title>Fake Hacker News Client</title>
 </head>
 <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2>Welcome to The Fake Hackernews client:</h2>
+        <p>Here you can test the basic actions posible with the <a href="https://github.com/alejoescobar/api_hacker_news">API</a></p>
+        <button class="list-articles btn btn-primary">List Articles</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row articles">
+
+    </div>
+  </div>
 
 </body>
 </html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script>
+  $( document ).ready(function() {
+
+    var render = function(data, insert_into){
+
+      $(insert_into).html("");
+      $.each( data, function( key, item ) {
+        // if (item.done === true){ checked = "checked = 'checked'"; myClass = "done"} else{ checked = ""; myClass = ""}
+        $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p></div>'));
+      });
+
+    }
+
+    var callArticles = function(url, insert_into){
+
+      $.getJSON( url , function( data ) {
+        render(data, insert_into);
+        console.log(data);
+      }).error(function(jqXHR, textStatus, errorThrown) {
+        console.log("error " + textStatus + ": " + errorThrown);
+        $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+      })
+
+    }
+
+
+
+    $('.list-articles').on('click', this ,function(){
+      console.log("list articles clicked");
+      callArticles("http://api.fakehackernews.com/api/articles",".articles");
+    })
+
+  });
+</script>
+
+<!-- http://api.fakehackernews.com/api/articles -->
