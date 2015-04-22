@@ -3,61 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <title>Fake Hacker News Client</title>
+  <style>
+    .header button{
+      margin-right:5px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container header">
     <div class="row">
       <div class="col-lg-12">
         <h2>Welcome to The Fake Hackernews client:</h2>
         <p>Here you can test the basic actions posible with the <a href="https://github.com/alejoescobar/api_hacker_news">API</a></p>
-        <button class="list-articles btn btn-primary">List Articles</button>
+        <p><button class="list-articles btn btn-primary">List Articles</button><button class="list-users btn btn-default">List Users</button></p>
       </div>
     </div>
-  </div>
-  <div class="container">
+
+
     <div class="row articles">
 
     </div>
-  </div>
 
-</body>
-</html>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script>
-  $( document ).ready(function() {
+    <div class="row">
 
-    var render = function(data, insert_into){
 
-      $(insert_into).html("");
-      $.each( data, function( key, item ) {
-        // if (item.done === true){ checked = "checked = 'checked'"; myClass = "done"} else{ checked = ""; myClass = ""}
-        $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p></div>'));
-      });
 
-    }
 
-    var callArticles = function(url, insert_into){
+      <div class="col-lg-6">
 
-      $.getJSON( url , function( data ) {
-        render(data, insert_into);
-        console.log(data);
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log("error " + textStatus + ": " + errorThrown);
-        $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+        <form id="new-article-form">
+          <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" name="title" id="title" placeholder="Enter title">
+          </div>
+          <div class="form-group">
+            <label for="body">Text body:</label>
+            <textarea class="form-control" name="body" id="body"></textarea>
+          </div>
+          <button type="submit" value="Submit" class="create-article btn btn-default">Create Article</button>
+        </form>
+
+      </div>
+    </div>
+
+  </body>
+  </html>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script>
+    $( document ).ready(function() {
+
+      var render = function(data, insert_into){
+
+        $(insert_into).html("");
+        $.each( data, function( key, item ) {
+          $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
+        });
+
+      }
+
+      var listData = function(type, url, insert_into){
+
+        switch(type) {
+          case "articles":
+            $.getJSON( url , function( data ) {
+              render(data, insert_into);
+              console.log(data);
+            }).error(function(jqXHR, textStatus, errorThrown) {
+              console.log("error " + textStatus + ": " + errorThrown);
+              $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+            })
+          break;
+          case "users":
+            console.log("trying to list users");
+            token = "ecb1fbe205254cedac066b915d9b6552";
+            $.getJSON( url + "?&token=" + token, function( data ) {
+              render(data, insert_into);
+              console.log(data);
+            }).error(function(jqXHR, textStatus, errorThrown) {
+              console.log("error " + textStatus + ": " + errorThrown);
+              $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+            })
+          break;
+          default:
+            console.log("no correct type param given");
+        }
+
+
+      }
+
+      var createArticle = function( serializedData ){
+
+        console.log("serializing:" + $('#new-article-form').serialize());
+        url = "http://api.fakehackernews.com/api/articles";
+        var item = {"title" : "some title", "body" : "some body", "user_id": 2};
+
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: JSON.stringify(item),
+          // data: serializedData ,
+          success: function(){
+            // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
+            console.log("successfully sended");
+          },
+          error: function(e) { console.log(e) },
+          dataType: "json",
+          contentType: "application/json"
+        });
+      }
+
+
+
+      $('.list-articles').on('click', this ,function(){
+        listData("articles", "http://api.fakehackernews.com/api/articles",".articles");
+      })
+      $('.list-users').on('click', this ,function(){
+        listData("users", "http://api.fakehackernews.com/api/users",".articles");
       })
 
-    }
+    //   $('#new-article-form').on('submit', this ,function(e){
+    //    e.preventDefault();
+    //    console.log("trying to send...");
+    //    createArticle();
 
+    //   // callArticles("http://api.fakehackernews.com/api/articles",".articles");
+    // })
+$( "form" ).on( "submit", function( event ) {
+  event.preventDefault();
+      // console.log( $( this ).serialize() );
+      createArticle( $( this ).serialize() );
+    });
 
-
-    $('.list-articles').on('click', this ,function(){
-      console.log("list articles clicked");
-      callArticles("http://api.fakehackernews.com/api/articles",".articles");
-    })
-
-  });
+});
 </script>
 
 <!-- http://api.fakehackernews.com/api/articles -->
