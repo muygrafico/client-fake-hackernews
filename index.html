@@ -73,10 +73,13 @@
         $(insert_into).html("");
         $.each( data, function( key, item ) {
           if (type === "users") {
-            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
+            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p><a href="#" id=' + item.id + ' class="btn btn-default btn-sm list-comments">User comments</a></div>'));
           }
           if (type === "articles") {
             $( insert_into ).append($('<div id=' + item.id + ' class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p><a href="#" class="btn btn-default btn-sm create-comment">add comment</a></div>'));
+          }
+          if (type === "comments") {
+            $( insert_into ).append($('<div id=' + item.id + ' class="col-lg-4"><h3>'+ item.body +'</h3><p>'+ item.body +'</p>'));
           };
         });
 
@@ -115,6 +118,16 @@
             contentType: "application/json"
           });
 
+          break;
+          case "comments":
+            console.log("Trying to list user comments")
+            $.getJSON( url , function( data ) {
+              render("comments", data, insert_into);
+              console.log(data);
+            }).error(function(jqXHR, textStatus, errorThrown) {
+              console.log("error " + textStatus + ": " + errorThrown);
+              $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+            })
           break;
           default:
           console.log("no correct type param given");
@@ -174,6 +187,11 @@
       })
       $('.list-users').on('click', this ,function(){
         listData("users", "http://api.fakehackernews.com/api/users",".articles");
+      })
+      $('.articles').on('click', '.list-comments', function(){
+        console.log("I'm here")
+        var userId = $(this).attr('id');
+        listData("comments", "http:/api.fakehackernews.com/api/users/" + userId +"/comments", ".articles");
       })
 
     //   $('#new-article-form').on('submit', this ,function(e){
