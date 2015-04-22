@@ -67,42 +67,69 @@
 
         switch(type) {
           case "articles":
-            $.getJSON( url , function( data ) {
-              render(data, insert_into);
-              console.log(data);
-            }).error(function(jqXHR, textStatus, errorThrown) {
-              console.log("error " + textStatus + ": " + errorThrown);
-              $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
-            })
+          $.getJSON( url , function( data ) {
+            render(data, insert_into);
+            console.log(data);
+          }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log("error " + textStatus + ": " + errorThrown);
+            $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
+          })
           break;
           case "users":
-            console.log("trying to list users");
-            token = "ecb1fbe205254cedac066b915d9b6552";
-            $.getJSON( url + "?&token=" + token, function( data ) {
-              render(data, insert_into);
-              console.log(data);
-            }).error(function(jqXHR, textStatus, errorThrown) {
-              console.log("error " + textStatus + ": " + errorThrown);
-              $( insert_into ).html('<div>'+ textStatus + ": " + errorThrown +' :/ </div>');
-            })
-          break;
-          default:
-            console.log("no correct type param given");
-        }
+          console.log("trying to list users");
+          token = "Token token=18d9cfe2163d48c1ad3caa429e1573bc";
 
 
-      }
 
-      var createArticle = function( serializedData ){
 
-        console.log("serializing:" + $('#new-article-form').serialize());
-        url = "http://api.fakehackernews.com/api/articles";
-        var item = {"title" : "some title", "body" : "some body", "user_id": 2};
+          $.ajax({
+            type: 'GET',
+            beforeSend: function (request)
+            {
+              request.setRequestHeader("Authorization", token);
+            },
+            url: url,
+          // data: serializedData ,
+          success: function( response ){
+            console.log(response);
+            // render(data, insert_into);
+            console.log("successfully sended");
+          },
+          error: function(e) { console.log(e) },
+          dataType: "json",
+          contentType: "application/json"
+        });
 
-        $.ajax({
-          type: 'POST',
-          url: url,
-          data: JSON.stringify(item),
+        // $.ajax({
+        //   type:"GET",
+        //   beforeSend: function (request)
+        //   {
+        //     request.setRequestHeader("Authorization:", token);
+        //   },
+        //   url: url,
+
+        //   success: function(msg) {
+        //     $("#results").append("The result =" + StringifyPretty(msg));
+        //   }
+        // });
+break;
+default:
+console.log("no correct type param given");
+}
+
+
+}
+
+var createArticle = function( serializedData ){
+
+  console.log("serializing:" + $('#new-article-form').serialize());
+  url = "http://api.fakehackernews.com/api/articles";
+  var item = {"title" : "some title", "body" : "some body", "user_id": 2};
+
+  $.ajax({
+    type: 'POST',
+    url: url,
+    data: JSON.stringify(item),
           // data: serializedData ,
           success: function(){
             // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
@@ -112,16 +139,16 @@
           dataType: "json",
           contentType: "application/json"
         });
-      }
+}
 
 
 
-      $('.list-articles').on('click', this ,function(){
-        listData("articles", "http://api.fakehackernews.com/api/articles",".articles");
-      })
-      $('.list-users').on('click', this ,function(){
-        listData("users", "http://api.fakehackernews.com/api/users",".articles");
-      })
+$('.list-articles').on('click', this ,function(){
+  listData("articles", "http://api.fakehackernews.com/api/articles",".articles");
+})
+$('.list-users').on('click', this ,function(){
+  listData("users", "http://api.fakehackernews.com/api/users",".articles");
+})
 
     //   $('#new-article-form').on('submit', this ,function(e){
     //    e.preventDefault();
