@@ -58,7 +58,7 @@
             $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
           }
           if (type === "articles") {
-            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p></div>'));
+            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p><a href="#" class="btn btn-default btn-sm">add comment</a></div>'));
           };
         });
 
@@ -142,7 +142,7 @@
 
     //   // callArticles("http://api.fakehackernews.com/api/articles",".articles");
     // })
-$( "form" ).on( "submit", function( event ) {
+$( "form#" ).on( "submit", function( event ) {
   event.preventDefault();
       // console.log( $( this ).serialize() );
       createArticle( $( this ).serialize() );
