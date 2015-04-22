@@ -19,15 +19,11 @@
       </div>
     </div>
 
-
     <div class="row articles">
 
     </div>
 
     <div class="row">
-
-
-
 
       <div class="col-lg-6">
 
@@ -54,11 +50,16 @@
   <script>
     $( document ).ready(function() {
 
-      var render = function(data, insert_into){
+      var render = function(type, data, insert_into){
 
         $(insert_into).html("");
         $.each( data, function( key, item ) {
-          $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
+          if (type === "users") {
+            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.name +'</h3><p>'+ item.username +'</p></div>'));
+          }
+          if (type === "articles") {
+            $( insert_into ).append($('<div class="col-lg-4"><h3>'+ item.title +'</h3><p>'+ item.body +'</p></div>'));
+          };
         });
 
       }
@@ -68,7 +69,7 @@
         switch(type) {
           case "articles":
           $.getJSON( url , function( data ) {
-            render(data, insert_into);
+            render("articles", data, insert_into);
             console.log(data);
           }).error(function(jqXHR, textStatus, errorThrown) {
             console.log("error " + textStatus + ": " + errorThrown);
@@ -80,56 +81,40 @@
           token = "Token token=18d9cfe2163d48c1ad3caa429e1573bc";
 
 
-
-
           $.ajax({
             type: 'GET',
             beforeSend: function (request)
-            {
-              request.setRequestHeader("Authorization", token);
-            },
+            {  request.setRequestHeader("Authorization", token) },
             url: url,
-          // data: serializedData ,
-          success: function( response ){
-            console.log(response);
-            // render(data, insert_into);
-            console.log("successfully sended");
-          },
-          error: function(e) { console.log(e) },
-          dataType: "json",
-          contentType: "application/json"
-        });
 
-        // $.ajax({
-        //   type:"GET",
-        //   beforeSend: function (request)
-        //   {
-        //     request.setRequestHeader("Authorization:", token);
-        //   },
-        //   url: url,
+            success: function( response ){
+              console.log(response);
+              console.log("successfully sended");
+              render("users", response, insert_into);
+            },
+            error: function(e) { console.log(e) },
+            dataType: "json",
+            contentType: "application/json"
+          });
 
-        //   success: function(msg) {
-        //     $("#results").append("The result =" + StringifyPretty(msg));
-        //   }
-        // });
-break;
-default:
-console.log("no correct type param given");
-}
+          break;
+          default:
+          console.log("no correct type param given");
+        }
 
 
-}
+      }
 
-var createArticle = function( serializedData ){
+      var createArticle = function( serializedData ){
 
-  console.log("serializing:" + $('#new-article-form').serialize());
-  url = "http://api.fakehackernews.com/api/articles";
-  var item = {"title" : "some title", "body" : "some body", "user_id": 2};
+        console.log("serializing:" + $('#new-article-form').serialize());
+        url = "http://api.fakehackernews.com/api/articles";
+        var item = {"title" : "some title", "body" : "some body", "user_id": 2};
 
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: JSON.stringify(item),
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: JSON.stringify(item),
           // data: serializedData ,
           success: function(){
             // callList("http://makeitreal-todo.herokuapp.com/todo_items",".todo-list");
@@ -139,16 +124,16 @@ var createArticle = function( serializedData ){
           dataType: "json",
           contentType: "application/json"
         });
-}
+      }
 
 
 
-$('.list-articles').on('click', this ,function(){
-  listData("articles", "http://api.fakehackernews.com/api/articles",".articles");
-})
-$('.list-users').on('click', this ,function(){
-  listData("users", "http://api.fakehackernews.com/api/users",".articles");
-})
+      $('.list-articles').on('click', this ,function(){
+        listData("articles", "http://api.fakehackernews.com/api/articles",".articles");
+      })
+      $('.list-users').on('click', this ,function(){
+        listData("users", "http://api.fakehackernews.com/api/users",".articles");
+      })
 
     //   $('#new-article-form').on('submit', this ,function(e){
     //    e.preventDefault();
